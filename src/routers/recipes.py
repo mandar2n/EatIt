@@ -52,7 +52,7 @@ def get_recipe_options():
 
 # AI 레시피 생성 및 DB 저장
 @router.post("/generate", response_model=schemas.AIGeneratedRecipeDto)
-def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(get_db)):
+async def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(get_db)):
     
     # 프롬프트 생성
     prompt = crud.build_prompt(dto)
@@ -70,10 +70,19 @@ def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(get_db))
     # AI가 생성한 레시피 결과
     recipe_result = response['choices'][0]['message']['content'].strip()
     
-    # 사용자가 선택한 가격, 키워드, 편의점 ID 조회
-    price_id = crud.get_price_id(db, dto.value[0])  # 첫 번째 값이 가격
-    keyword_id = crud.get_keyword_id(db, dto.value[1])  # 두 번째 값이 키워드
-    cstore_id = crud.get_cstore_id(db, dto.value[2])  # 세 번째 값이 편의점 종류
+    price_name = dto.value[0].value[0].display  # Extract the price value from the DTO
+    price_id = await crud.get_price_id(price_name=price_name, db=db)  # Call the function with the correct value
+
+    keyword_name = dto.value[1].value[0].display  # Extract the price value from the DTO
+    keyword_id = await crud.get_keyword_id(keyword_name=keyword_name, db=db)  # Call the function with the correct value
+    
+    cstore_name = dto.value[2].value[0].display   # Extract the price value from the DTO
+    cstore_id = await crud.get_cstore_id(cstore_name=cstore_name, db=db)  # Call the function with the correct value
+    
+   
+    print(f"Extracted price_name: {price_name}")  # Debugging
+    print(f"Extracted keyword_name: {keyword_name}")  # Debugging
+    print(f"Extracted cstore_name: {cstore_name}")  # Debugging
     
     # DB에 저장 (Recipe 모델에 맞춰 저장)
     new_recipe = models.Recipe(
@@ -85,7 +94,7 @@ def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(get_db))
     )
     
     db.add(new_recipe)
-    db.commit()
-    db.refresh(new_recipe)
+    await db.commit()
+    await db.refresh(new_recipe)
     
     return {"recipe_result": new_recipe.description}
