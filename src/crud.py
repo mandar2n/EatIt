@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.schemas import RecipeOptionDto
@@ -66,8 +66,21 @@ async def get_cstore_id(cstore_name: str, db: AsyncSession = Depends(get_db)):
     
     return storeType.cstore_id
 
-def get_nearby_stores(db: Session, user_location: tuple, radius: int = 1000):
-    user_point = ST_GeomFromText(f"POINT({user_location[0]} {user_location[1]})", srid=4326)
-    return db.query(models.Store).filter(
-        ST_Distance_Sphere(models.Store.location, user_point) <= radius
-    ).all()
+async def get_nearby_stores(user_location: tuple, radius: int = 1000, db: AsyncSession = Depends(get_db)):
+    # Convert user_location tuple to POINT geometry
+    user_point = f"POINT({user_location[1]} {user_location[0]})"
+    
+    # Perform the query using execute (asynchronously)
+    result = await db.execute(
+        text("""
+            SELECT store_id, store_name, address, ST_AsText(location) as location
+            FROM store
+            WHERE ST_Distance_Sphere(location, ST_GeomFromText(:user_point, 4326)) <= :radius
+        """),
+        {"user_point": user_point, "radius": radius}
+    )
+    
+    # Fetch all results
+    stores = result.fetchall()
+    
+    return stores

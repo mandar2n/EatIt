@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from src.database import Base
+from database import Base
 from geoalchemy2 import Geometry
 
 Base = declarative_base()
