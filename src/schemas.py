@@ -14,10 +14,15 @@ class StoreListDto(BaseModel):
     latitude: float
     longitude: float
 
+# 각 옵션 값에 대한 모델
+class OptionValueDto(BaseModel):
+    display: str
+    value: str  # 또는 해당하는 다른 타입, 예: int, float 등
+
 # 레시피 옵션 정보 DTO
 class OptionDto(BaseModel):
     display: str
-    value: List[dict]
+    value: List[OptionValueDto]
 
 # 레시피 생성에 필요한 입력
 class RecipeOptionDto(BaseModel):

@@ -5,6 +5,8 @@ from src import schemas, crud, models
 from src.database import get_db
 import openai  # OpenAI API 연결
 from dotenv import load_dotenv
+from src.schemas import OptionValueDto, OptionDto
+from typing import List
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -15,28 +17,38 @@ router = APIRouter()
 openai.api_key = os.getenv("OPENAI_API_KEY")  
 
 # 레시피 옵션 정보 반환 (가격대, 편의점 종류, 키워드)
-@router.get("/options", response_model=schemas.OptionDto)
+@router.get("/options", response_model=List[OptionDto])
 def get_recipe_options():
     options = [
-        {
-            "display": "최대 금액 선택",
-            "value": [{"display": "7000원", "value": 7000}, {"display": "10000원", "value": 10000}]
-        },
-        {
-            "display": "편의점 선택",
-            "value": [{"display": "GS25", "value": "GS25"}, {"display": "CU", "value": "CU"}, {"display": "세븐일레븐", "value": "7ELEVEN"}]
-        },
-        {
-            "display": "키워드",
-            "value": [{"display": "상큼한 비타민", "value": "vitamin"},
-                      {"display": "에너지 넘치는 영양소", "value": "nutritious"},
-                      {"display": "건강한 저당", "value": "healthy_low_sugar"},
-                      {"display": "아삭한 식이섬유", "value": "dietary_fiber"},
-                      {"display": "균형 잡힌 식단", "value": "balanced_diet"},
-                      {"display": "가벼운 저칼로리", "value": "low_calorie"}]
-        }
+        OptionDto(
+            display="최대 금액 선택",
+            value=[
+                OptionValueDto(display="5000원", value="5000"),
+                OptionValueDto(display="8000원", value="8000"),
+                OptionValueDto(display="10000원", value="10000")
+            ]
+        ),
+        OptionDto(
+            display="편의점 선택",
+            value=[
+                OptionValueDto(display="GS25", value="GS25"),
+                OptionValueDto(display="CU", value="CU"),
+                OptionValueDto(display="세븐일레븐", value="7ELEVEN")
+            ]
+        ),
+        OptionDto(
+            display="키워드",
+            value=[
+                OptionValueDto(display="상큼한 비타민", value="vitamin"),
+                OptionValueDto(display="에너지 넘치는 영양소", value="nutritious"),
+                OptionValueDto(display="건강한 저당", value="healthy_low_sugar"),
+                OptionValueDto(display="아삭한 식이섬유", value="dietary_fiber"),
+                OptionValueDto(display="균형 잡힌 식단", value="balanced_diet"),
+                OptionValueDto(display="가벼운 저칼로리", value="low_calorie")
+            ]
+        )
     ]
-    return {"code": 200, "data": options}
+    return options
 
 # AI 레시피 생성 및 DB 저장
 @router.post("/generate", response_model=schemas.AIGeneratedRecipeDto)
