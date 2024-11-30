@@ -31,7 +31,3 @@ async def get_db():
             yield session
         finally:
             pass
-
-# 이 코드에서 중요한 부분:
-# 1. `future=True`: 비동기 작업을 위한 적절한 동작을 보장합니다.
-# 2. `SessionLocal`을 비동기 세션으로 설정하여, 모든 데이터베이스 작업을 비동기적으로 처리합니다.
