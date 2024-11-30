@@ -1,13 +1,17 @@
-from typing import Optional
-
 from fastapi import FastAPI
+from src.database import init_db
+from src.database import engine, SessionLocal
+
+from src.models import Base
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello" : "World"}
+@app.on_event("startup")
+async def startup_event():
+    # DB 테이블 생성
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/")
+async def read_root():
+    return {"message": "DB Connection Successful"}
