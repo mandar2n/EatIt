@@ -58,7 +58,7 @@ class Store(Base):
     # latitude = Column(Float, nullable=False)
     location = Column(Geometry(geometry_type="POINT", srid=4326))  # 공간 인덱싱을 위한 필드
     
-    # Location 모델 (사용자 위치)
+# Location 모델 (사용자 위치)
 class Location(Base):
     __tablename__ = "location"
     location_id = Column(Integer, primary_key=True, index=True)

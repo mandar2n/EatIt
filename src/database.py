@@ -1,31 +1,36 @@
+##src.database.py
+
+import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
-from src.config.settings import DATABASE_URL
-import asyncio
+from sqlalchemy import create_engine
+from dotenv import load_dotenv
+import sys
+import os
+
+# 프로젝트 디렉토리를 경로에 추가
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
+# .env 파일에서 환경 변수 로드
+load_dotenv()
+
+# DATABASE_URL 환경 변수를 불러옴
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Async engine 생성
-engine = create_async_engine(DATABASE_URL, echo=True, future=True)
-
-# 비동기 세션 설정
-SessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,  # commit할 때 객체를 만료시키지 않음
-)
-
-# Base 클래스
+engine = create_async_engine(DATABASE_URL, echo=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 Base = declarative_base()
 
-# DB 초기화 함수 (테이블 생성)
+# initialize database
 async def init_db():
-    # 비동기적으로 메타데이터 생성
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-# DB 세션 함수
+# get_db 함수 추가
 async def get_db():
-    # 세션을 비동기적으로 가져오기
     async with SessionLocal() as session:
         try:
             yield session
