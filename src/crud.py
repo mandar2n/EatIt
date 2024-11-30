@@ -1,7 +1,10 @@
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import Session
+from src.database import get_db
 from src.schemas import RecipeOptionDto
 from src import models
+from sqlalchemy.ext.asyncio import AsyncSession
 from geoalchemy2.functions import ST_Distance_Sphere, ST_GeomFromText
 
 def build_prompt(dto: RecipeOptionDto) -> str:
@@ -30,26 +33,38 @@ def build_prompt(dto: RecipeOptionDto) -> str:
 
     return prompt
 
-def get_price_id(db: Session, price_name: str):
-    # 가격 정보에 해당하는 ID를 찾습니다.
-    price = db.query(models.PriceRange).filter(models.PriceRange.price_name == price_name).first()
+async def get_price_id(price_name: str, db: AsyncSession = Depends(get_db)):
+    # Select statement using AsyncSession
+    stmt = select(models.PriceRange).filter(models.PriceRange.price_name == price_name)
+    result = await db.execute(stmt)
+    price = result.scalars().first()  # Get the first result
+    
     if not price:
-        raise HTTPException(status_code=404, detail="Price not found")
+        raise HTTPException(status_code=404, detail="Price range not found")
+    
     return price.price_id
 
-def get_keyword_id(db: Session, keyword: str):
-    # 키워드에 해당하는 ID를 찾습니다.
-    keyword_obj = db.query(models.Keyword).filter(models.Keyword.keyword_name == keyword).first()
-    if not keyword_obj:
+async def get_keyword_id(keyword_name: str, db: AsyncSession = Depends(get_db)):
+    # Select statement using AsyncSession
+    stmt = select(models.Keyword).filter(models.Keyword.keyword_name == keyword_name)
+    result = await db.execute(stmt)
+    keyword = result.scalars().first()  # Get the first result
+    
+    if not keyword:
         raise HTTPException(status_code=404, detail="Keyword not found")
-    return keyword_obj.keyword_id
+    
+    return keyword.keyword_id
 
-def get_cstore_id(db: Session, cstore_name: str):
-    # 편의점 종류에 해당하는 ID를 찾습니다.
-    cstore = db.query(models.StoreType).filter(models.StoreType.cstore_name == cstore_name).first()
-    if not cstore:
-        raise HTTPException(status_code=404, detail="Store type not found")
-    return cstore.cstore_id
+async def get_cstore_id(cstore_name: str, db: AsyncSession = Depends(get_db)):
+    # Select statement using AsyncSession
+    stmt = select(models.StoreType).filter(models.StoreType.cstore_name == cstore_name)
+    result = await db.execute(stmt)
+    storeType = result.scalars().first()  # Get the first result
+    
+    if not storeType:
+        raise HTTPException(status_code=404, detail="Store Type not found")
+    
+    return storeType.cstore_id
 
 def get_nearby_stores(db: Session, user_location: tuple, radius: int = 1000):
     user_point = ST_GeomFromText(f"POINT({user_location[0]} {user_location[1]})", srid=4326)

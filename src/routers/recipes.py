@@ -58,14 +58,17 @@ def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(get_db))
     prompt = crud.build_prompt(dto)
     
     # OpenAI API에 요청 (ChatGPT로 레시피 생성)
-    response = openai.Completion.create(
+    response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", 
-        prompt=prompt,
+        messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": prompt},  # Pass the prompt here
+        ],
         max_tokens=500
     )
 
     # AI가 생성한 레시피 결과
-    recipe_result = response.choices[0].text.strip()
+    recipe_result = response['choices'][0]['message']['content'].strip()
     
     # 사용자가 선택한 가격, 키워드, 편의점 ID 조회
     price_id = crud.get_price_id(db, dto.value[0])  # 첫 번째 값이 가격
