@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-from src.database import init_db
-from src.database import engine, SessionLocal
-from src.routers import recipes, location
+from back.src.database import init_db
+from back.src.database import engine, SessionLocal
+from back.src.routers import recipes, location
 
-from src.models import Base
+from back.src.models import Base
 
 app = FastAPI()
 app.include_router(recipes.router, prefix="/recipes", tags=["Recipes"])

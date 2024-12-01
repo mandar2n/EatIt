@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List
-from src import crud, models  # Adjust import based on your project structure
-from src.database import get_db
-from src.schemas import StoreListDto, UserLocationDto
+from back.src import crud, models  # Adjust import based on your project structure
+from back.src.database import get_db
+from back.src.schemas import StoreListDto, UserLocationDto
 
 
 router = APIRouter()

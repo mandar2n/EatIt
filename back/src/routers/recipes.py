@@ -1,11 +1,11 @@
 import os
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from src import schemas, crud, models
-from src.database import get_db
+from back.src import schemas, crud, models
+from back.src.database import get_db
 import openai  # OpenAI API 연결
 from dotenv import load_dotenv
-from src.schemas import OptionValueDto, OptionDto
+from back.src.schemas import OptionValueDto, OptionDto
 from typing import List
 
 # .env 파일에서 환경 변수 로드

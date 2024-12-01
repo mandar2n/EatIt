@@ -1,5 +1,5 @@
 import asyncio
-from src.database import init_db
+from back.src.database import init_db
 
 async def main():
     await init_db()
