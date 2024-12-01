@@ -13,6 +13,14 @@ class StoreListDto(BaseModel):
     address: str
     latitude: float
     longitude: float
+    
+# Recipe 리스트 조회 응답
+class RecipeDto(BaseModel):
+    recipe_name: str
+    description: str
+    price_id: int
+    keyword_id: int
+    cstore_id: int
 
 # 각 옵션 값에 대한 모델
 class OptionValueDto(BaseModel):

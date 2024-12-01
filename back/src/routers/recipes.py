@@ -1,11 +1,12 @@
 import os
 from fastapi import APIRouter, Depends
+from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 from back.src import schemas, crud, models
 from back.src.database import get_db
 import openai  # OpenAI API 연결
 from dotenv import load_dotenv
-from back.src.schemas import OptionValueDto, OptionDto
+from back.src.schemas import OptionValueDto, OptionDto, RecipeDto
 from typing import List
 
 # .env 파일에서 환경 변수 로드
@@ -98,3 +99,21 @@ async def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(ge
     await db.refresh(new_recipe)
     
     return {"recipe_result": new_recipe.description}
+
+# 레시피 리스트 가져오기
+@router.get("/list", response_model=List[RecipeDto])
+async def get_recipes(db: Session = Depends(get_db)):
+    result = await db.execute(select(models.Recipe))
+    recipe_list = result.scalars().all()
+
+    # 레시피 리스트를 DTO 형식으로 변환하여 반환
+    return [
+        RecipeDto(
+            recipe_name=recipe.recipe_name,
+            description=recipe.description,
+            price_id=recipe.price_id,
+            keyword_id=recipe.keyword_id,
+            cstore_id=recipe.cstore_id
+        )
+        for recipe in recipe_list
+    ]
