@@ -11,25 +11,33 @@
     <h1>AI Recipe Generator & Nearby Store Finder</h1>
 
     <!-- 근처 편의점 찾기 -->
-    <div id="storeFinder">
+    <div id="storeFinder" class="section">
+      <h2>Find Nearby Stores</h2>
       <button id="getLocationButton">Find Nearby Stores</button>
       <ul id="storeList"></ul>
     </div>
 
     <hr>
 
-    <!-- 레시피 옵션 제공 -->
-    <div id="recipeOptions">
-      <h2>Select Recipe Options</h2>
+    <!-- 레시피 생성 -->
+    <div id="recipeSection" class="section">
+      <h2>레시피 생성</h2>
       <form id="recipeForm">
+        <input type="text" id="recipeName" placeholder="레시피 이름 입력" required />
         <div id="optionsContainer"></div>
-        <label for="recipeName">Recipe Title:</label>
-        <input type="text" id="recipeName" placeholder="Enter your recipe title" required />
-        <button type="submit">Generate Recipe</button>
+        <button type="submit">레시피 생성</button>
       </form>
       <div id="recipeResult"></div>
     </div>
 
+    <hr>
+
+    <!-- 레시피 조회 -->
+    <div id="recipeQuerySection" class="section">
+      <h2>레시피 조회</h2>
+      <button id="recipeQueryButton">레시피 조회</button>
+      <div id="recipeQueryResult"></div>
+    </div>
   </div>
 
   <script src="scripts/api.js"></script>

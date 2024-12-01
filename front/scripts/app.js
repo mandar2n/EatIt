@@ -2,27 +2,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const optionsContainer = document.getElementById("optionsContainer");
     const recipeForm = document.getElementById("recipeForm");
     const recipeResult = document.getElementById("recipeResult");
+    const recipeQueryButton = document.getElementById("recipeQueryButton");
+    const recipeQueryResult = document.getElementById("recipeQueryResult");
     const getLocationButton = document.getElementById("getLocationButton");
     const storeList = document.getElementById("storeList");
-
-    // Add Recipe Query Button
-    const recipeQueryButton = document.createElement("button");
-    recipeQueryButton.id = "recipeQueryButton";
-    recipeQueryButton.textContent = "레시피 조회";
-    document.body.appendChild(recipeQueryButton);
-
-    // Recipe Query Button Click Event
-    recipeQueryButton.addEventListener("click", async () => {
-        console.log("Fetching recipes...");
-        const recipeData = await fetchRecipeData();
-        console.log("Recipe data fetched:", recipeData);
-
-        if (recipeData.length > 0) {
-            displayRecipeResults(recipeData);
-        } else {
-            recipeResult.innerHTML = "<p>No recipes found.</p>";
-        }
-    });
 
     // Fetch recipe options and render UI
     const options = await fetchOptions();
@@ -97,6 +80,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         recipeResult.innerHTML = result.recipe_result.replace(/\n/g, '<br>');
     });
 
+    // Recipe Query Button Click Event
+    recipeQueryButton.addEventListener("click", async () => {
+        console.log("Fetching recipes...");
+        const recipeData = await fetchRecipeData();
+        console.log("Recipe data fetched:", recipeData);
+
+        if (recipeData.length > 0) {
+            recipeQueryResult.innerHTML = recipeData.map(recipe => `
+                <div class="recipe">
+                    <h3>${recipe.recipe_name}</h3>
+                    <p>${recipe.description.replace(/\n/g, '<br>')}</p>
+                    <p><strong>Price:</strong> ${recipe.price_name}</p>
+                    <p><strong>Keyword:</strong> ${recipe.keyword_name}</p>
+                    <p><strong>Convenience Store:</strong> ${recipe.cstore_name}</p>
+                </div>
+            `).join("");
+        } else {
+            recipeQueryResult.innerHTML = "<p>No recipes found.</p>";
+        }
+    });
+
     // Location Button Event
     getLocationButton.addEventListener("click", () => {
         if ("geolocation" in navigator) {
@@ -127,17 +131,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 });
-
-// Function to display recipe results
-const displayRecipeResults = (data) => {
-    const recipeResult = document.getElementById("recipeResult");
-    recipeResult.innerHTML = data.map(recipe => `
-        <div class="recipe">
-            <h3>${recipe.recipe_name}</h3>
-            <p>${recipe.description.replace(/\n/g, '<br>')}</p>
-            <p><strong>Price:</strong> ${recipe.price_name}</p>
-            <p><strong>Keyword:</strong> ${recipe.keyword_name}</p>
-            <p><strong>Convenience Store:</strong> ${recipe.cstore_name}</p>
-        </div>
-    `).join("");
-};
