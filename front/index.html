@@ -3,65 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Convenience Store Finder</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <title>AI Recipe Generator & Store Finder</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <h1>Find Nearby Stores</h1>
-    <button id="getLocationButton">Find My Location</button>
-    <ul id="storeList"></ul>
-    
-    <script>
-        document.getElementById("getLocationButton").addEventListener("click", () => {
-            if ("geolocation" in navigator) {
-              // 위치 정보 가져오기
-              navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                  const latitude = position.coords.latitude;
-                  const longitude = position.coords.longitude;
-          
-                  console.log("User location:", latitude, longitude);
-          
-                  // 백엔드로 위치 정보 전송
-                  try {
-                    const response = await fetch("http://127.0.0.1:8000/location/nearby_stores", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ latitude, longitude }),
-                    });
-          
-                    if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-          
-                    // JSON 데이터를 파싱
-                    const stores = await response.json();
-                    console.log("Stores:", stores);
-          
-                    // HTML에 편의점 리스트 표시
-                    const storeList = document.getElementById("storeList");
-                    storeList.innerHTML = stores
-                      .map(
-                        (store) =>
-                          `<li><strong>${store.store_name}</strong> - ${store.address}</li>`
-                      )
-                      .join("");
-                  } catch (error) {
-                    console.error("Error fetching stores:", error);
-                    alert("Failed to fetch nearby stores. Please try again.");
-                  }
-                },
-                (error) => {
-                  console.error("Error fetching location:", error);
-                  alert("Unable to fetch your location. Please allow location access.");
-                }
-              );
-            } else {
-              alert("Geolocation is not supported by your browser.");
-            }
-          });
-              
-    </script>
+  <div class="container">
+    <h1>AI Recipe Generator & Nearby Store Finder</h1>
+
+    <!-- 근처 편의점 찾기 -->
+    <div id="storeFinder">
+      <button id="getLocationButton">Find Nearby Stores</button>
+      <ul id="storeList"></ul>
+    </div>
+
+    <hr>
+
+    <!-- 레시피 옵션 제공 -->
+    <div id="recipeOptions">
+      <h2>Select Recipe Options</h2>
+      <form id="recipeForm">
+        <div id="optionsContainer"></div>
+        <label for="recipeName">Recipe Title:</label>
+        <input type="text" id="recipeName" placeholder="Enter your recipe title" required />
+        <button type="submit">Generate Recipe</button>
+      </form>
+      <div id="recipeResult"></div>
+    </div>
+
+  </div>
+
+  <script src="scripts/api.js"></script>
+  <script src="scripts/app.js"></script>
 </body>
 </html>
