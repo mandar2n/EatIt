@@ -29,57 +29,59 @@ document.addEventListener("DOMContentLoaded", async () => {
       optionsContainer.appendChild(div);
     });
   
-    // Handle form submission for recipe generation
-recipeForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-  
-    const recipeName = document.getElementById("recipeName").value;
-    const selectedOptions = Array.from(
-      optionsContainer.querySelectorAll("select")
-    ).map((select) => {
-      const displayValue = select.options[select.selectedIndex].text;
-  
-      // 매핑 예시 (필요한 경우 새로운 매핑 추가)
-      const valueMap = {
-        "5000원": "5000",
-        "8000원": "8000",
-        "10000원": "10000",
-        "세븐일레븐": "7ELEVEN",
-        "GS25": "GS25",
-        "CU": "CU",
-        "상큼한 비타민": "vitamin",
-        "에너지 넘치는 영양소": "nutritious",
-        "건강한 저당": "healthy_low_sugar",
-        "아삭한 식이섬유": "dietary_fiber",
-        "균형 잡힌 식단": "balanced_diet",
-        "가벼운 저칼로리": "low_calorie"
-      };
-  
-      return {
-        display: select.name,
-        value: [{ display: displayValue, value: valueMap[displayValue] || displayValue }],
-      };
+        // Handle form submission for recipe generation
+    recipeForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+    
+        const recipeName = document.getElementById("recipeName").value;
+        const selectedOptions = Array.from(
+        optionsContainer.querySelectorAll("select")
+        ).map((select) => {
+        const displayValue = select.options[select.selectedIndex].text;
+    
+        // 매핑 예시 (필요한 경우 새로운 매핑 추가)
+        const valueMap = {
+            "5000원": "5000",
+            "8000원": "8000",
+            "10000원": "10000",
+            "세븐일레븐": "7ELEVEN",
+            "GS25": "GS25",
+            "CU": "CU",
+            "상큼한 비타민": "vitamin",
+            "에너지 넘치는 영양소": "nutritious",
+            "건강한 저당": "healthy_low_sugar",
+            "아삭한 식이섬유": "dietary_fiber",
+            "균형 잡힌 식단": "balanced_diet",
+            "가벼운 저칼로리": "low_calorie"
+        };
+    
+        return {
+            display: select.name,
+            value: [{ display: displayValue, value: valueMap[displayValue] || displayValue }],
+        };
+        });
+    
+        // 순서를 "최대 금액 선택", "키워드", "편의점 선택" 순으로 맞추기
+        const sortedOptions = [
+            selectedOptions.find(option => option.display === "최대 금액 선택"),
+            selectedOptions.find(option => option.display === "키워드"),
+            selectedOptions.find(option => option.display === "편의점 선택"),
+        ];
+    
+        const requestData = {
+            recipe_name: recipeName,
+            value: sortedOptions,
+        };
+    
+        console.log("Request Data to Server:", requestData); // 전송할 데이터 확인
+    
+        const result = await generateRecipe(requestData);
+
+        // 텍스트 내용에 줄바꿈을 반영하려면, recipeResult의 innerHTML을 사용하고, `\n`을 <br>로 변환
+        recipeResult.innerHTML = result.recipe_result.replace(/\n/g, '<br>');
     });
-  
-    // 순서를 "최대 금액 선택", "키워드", "편의점 선택" 순으로 맞추기
-    const sortedOptions = [
-      selectedOptions.find(option => option.display === "최대 금액 선택"),
-      selectedOptions.find(option => option.display === "키워드"),
-      selectedOptions.find(option => option.display === "편의점 선택"),
-    ];
-  
-    const requestData = {
-      recipe_name: recipeName,
-      value: sortedOptions,
-    };
-  
-    console.log("Request Data to Server:", requestData); // 전송할 데이터 확인
-  
-    const result = await generateRecipe(requestData);
-    recipeResult.textContent = result.recipe_result;
-  });
-  
-  
+    
+    
   
     // Handle location button click for fetching nearby stores
     getLocationButton.addEventListener("click", () => {
