@@ -8,6 +8,7 @@ import openai  # OpenAI API 연결
 from dotenv import load_dotenv
 from back.src.schemas import OptionValueDto, OptionDto, RecipeDto
 from typing import List
+from sqlalchemy.orm import joinedload
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -103,17 +104,40 @@ async def generate_recipe(dto: schemas.RecipeOptionDto, db: Session = Depends(ge
 # 레시피 리스트 가져오기
 @router.get("/list", response_model=List[RecipeDto])
 async def get_recipes(db: Session = Depends(get_db)):
-    result = await db.execute(select(models.Recipe))
-    recipe_list = result.scalars().all()
+    # result = await db.execute(select(models.Recipe))
+    # recipe_list = result.scalars().all()
 
+    # # 레시피 리스트를 DTO 형식으로 변환하여 반환
+    # return [
+    #     RecipeDto(
+    #         recipe_name=recipe.recipe_name,
+    #         description=recipe.description,
+    #         price_id=recipe.price_id,
+    #         keyword_id=recipe.keyword_id,
+    #         cstore_id=recipe.cstore_id
+    #     )
+    #     for recipe in recipe_list
+    # ]
+    
+    # 쿼리 실행을 비동기적으로 진행
+    stmt = select(models.Recipe).options(
+        joinedload(models.Recipe.price),   # 가격 정보 로드
+        joinedload(models.Recipe.keyword),  # 키워드 정보 로드
+        joinedload(models.Recipe.cstore)    # 편의점 정보 로드
+    )
+
+    result = await db.execute(stmt)  # 쿼리 실행
+
+    # 결과에서 레시피 객체를 추출
+    recipes = result.scalars().all()
     # 레시피 리스트를 DTO 형식으로 변환하여 반환
     return [
         RecipeDto(
             recipe_name=recipe.recipe_name,
             description=recipe.description,
-            price_id=recipe.price_id,
-            keyword_id=recipe.keyword_id,
-            cstore_id=recipe.cstore_id
+            price_name=recipe.price.price_name,  # price 테이블의 price_name
+            keyword_name=recipe.keyword.keyword_name,  # keyword 테이블의 keyword_name
+            cstore_name=recipe.cstore.cstore_name  # cstore 테이블의 cstore_name
         )
-        for recipe in recipe_list
+        for recipe in recipes
     ]

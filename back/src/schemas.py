@@ -18,9 +18,9 @@ class StoreListDto(BaseModel):
 class RecipeDto(BaseModel):
     recipe_name: str
     description: str
-    price_id: int
-    keyword_id: int
-    cstore_id: int
+    price_name: str
+    keyword_name: str
+    cstore_name: str
 
 # 각 옵션 값에 대한 모델
 class OptionValueDto(BaseModel):
