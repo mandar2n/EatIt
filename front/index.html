@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Recipe Generator & Store Finder</title>
+  <title>Eat It</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <h1>AI Recipe Generator & Nearby Store Finder</h1>
+    <h1>Eat It - 바쁜 삶 속에서 챙기는 건강한 한 끼</h1>
 
     <!-- 근처 편의점 찾기 -->
     <div id="storeFinder" class="section">
-      <h2>Find Nearby Stores</h2>
-      <button id="getLocationButton">Find Nearby Stores</button>
+      <h2>내 주변 편의점 찾기</h2>
+      <button id="getLocationButton">편의점 찾기</button>
       <ul id="storeList"></ul>
     </div>
 
@@ -21,11 +21,11 @@
 
     <!-- 레시피 생성 -->
     <div id="recipeSection" class="section">
-      <h2>레시피 생성</h2>
+      <h2>내 취향대로 AI가 추천하는 편의점 조합</h2>
       <form id="recipeForm">
-        <input type="text" id="recipeName" placeholder="레시피 이름 입력" required />
+        <input type="text" id="recipeName" placeholder="조합 이름 입력" required />
         <div id="optionsContainer"></div>
-        <button type="submit">레시피 생성</button>
+        <button type="submit">나만의 조합 만들기</button>
       </form>
       <div id="recipeResult"></div>
     </div>
@@ -34,8 +34,8 @@
 
     <!-- 레시피 조회 -->
     <div id="recipeQuerySection" class="section">
-      <h2>레시피 조회</h2>
-      <button id="recipeQueryButton">레시피 조회</button>
+      <h2>저번에는 뭘 먹었냐면..</h2>
+      <button id="recipeQueryButton">과거 조합 조회</button>
       <div id="recipeQueryResult"></div>
     </div>
   </div>
