@@ -3,6 +3,7 @@ from back.src.database import init_db
 from back.src.database import engine, SessionLocal
 from back.src.routers import recipes, location
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from back.src.models import Base
 
@@ -16,6 +17,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 정적 파일 경로 설정
+app.mount("/front", StaticFiles(directory="front"), name="front")
 
 app.include_router(recipes.router, prefix="/recipes", tags=["Recipes"])
 app.include_router(location.router, prefix="/location", tags=["Location"])
